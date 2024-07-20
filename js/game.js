@@ -21,6 +21,19 @@ Game.create = function(){
             }
         );
 
+        // Add floating text
+        var floatingText = Game.scene.add.bitmapText(pointer.x, pointer.y, 'font', '+10', 38).setOrigin(0.5);
+        Game.scene.tweens.add({
+            targets: floatingText,
+            y: floatingText.y - 50,
+            alpha: 0,
+            duration: 1000,
+            ease: 'Power1',
+            onComplete: function() {
+                floatingText.destroy();
+            }
+        });
+
     });
 
 
