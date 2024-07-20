@@ -33,9 +33,7 @@ Game.create = function(){
                 floatingText.destroy();
             }
         });
-
     });
-
 
     var txt = this.add.bitmapText((window.innerWidth / 2) - 100, logo.height, 'font', 'SCORE:', 38).setOrigin(0);
     this.scoreTxt = this.add.bitmapText(txt.x+txt.width+10, logo.height, 'font', '0', 38).setOrigin(0);
