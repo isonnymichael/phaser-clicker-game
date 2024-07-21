@@ -9,7 +9,13 @@ Game.preload = function(){
 Game.create = function(){
     var logo = this.add.image(config.width / 2, config.height / 2 - 100,'logo').setInteractive();
     logo.on('pointerdown',function(pointer){
+
+        if (Game.scene.energy < 10){
+            return;
+        }
+
         Game.updateScore(10);
+        Game.updateEnergy(-10);
 
         Game.scene.tweens.add(
             {
@@ -37,17 +43,30 @@ Game.create = function(){
 
     this.scoreTxt = this.add.bitmapText(config.width / 2, logo.height - 300, 'font', '0', 76).setOrigin(0.5, 0.5);
     Game.setScore();
+
+    this.energyTxt = this.add.bitmapText(config.width / 2, logo.y + 350, 'font', '5000/5000', 48).setOrigin(0.5, 0.5);
+    Game.setEnergy();
+
+    // Set up energy recovery every second
+    this.time.addEvent({
+        delay: 1000, // 1 second
+        callback: Game.recoverEnergy,
+        callbackScope: this,
+        loop: true
+    });
 };
 
 Game.setScore = function(){
-    // Gets the value stored in localStorage, or 0 if nothing is found
-    // Don't fortget to parseInt(), all values are stored as strings in localStorage
-    Game.scene.score = parseInt(localStorage.getItem('score')) || 0;
+    Game.scene.score = parseInt(localStorage.getItem('score')) || 5000;
     Game.scene.scoreTxt.setText(Game.scene.score);
 };
 
+Game.setEnergy = function(){
+    Game.scene.energy = parseInt(localStorage.getItem('energy')) || 0;
+    Game.scene.energyTxt.setText(Game.scene.energy + '/' + '5000');
+};
 
-// ### Alternate way to save, by bundling all data into a JSON file stored as a single localStorage entry ###
+
 Game.saveFile = function(){
     var file = {
         score: Game.scene.score,
@@ -62,10 +81,26 @@ Game.loadFile = function(){
 // ##################"
 
 Game.updateScore = function(increment){
-    // Updates the score and stores the new value in the localStorage
     Game.scene.score += increment;
     Game.scene.scoreTxt.setText(Game.scene.score);
     localStorage.setItem('score',Game.scene.score);
+
+    Game.scene.scoreTxt.setText(Game.scene.score);
+};
+
+Game.updateEnergy = function(increment){
+    Game.scene.energy += increment;
+    Game.scene.energyTxt.setText(Game.scene.energy);
+    localStorage.setItem('energy',Game.scene.energy);
+
+    Game.scene.energyTxt.setText(Game.scene.energy + '/' + '5000');
+};
+
+Game.recoverEnergy = function() {
+    if(Game.scene.energy >= 5000){
+        return;
+    }
+    Game.updateEnergy(5); // Increase energy by 5 every second
 };
 
 var config = {
