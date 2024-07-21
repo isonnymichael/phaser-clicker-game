@@ -54,6 +54,9 @@ Game.create = function(){
         callbackScope: this,
         loop: true
     });
+
+    // Calculate offline recharge
+    Game.calculateOfflineRecharge();
 };
 
 Game.setScore = function(){
@@ -67,16 +70,20 @@ Game.setEnergy = function(){
 };
 
 
-Game.saveFile = function(){
+Game.saveFile = function() {
     var file = {
         score: Game.scene.score,
+        energy: Game.scene.energy,
+        timestamp: Date.now() // Save current timestamp
     };
-    localStorage.setItem('saveFile',JSON.stringify(file));
+    localStorage.setItem('saveFile', JSON.stringify(file));
 };
 
-Game.loadFile = function(){
+Game.loadFile = function() {
     var file = JSON.parse(localStorage.getItem('saveFile'));
     Game.scene.score = file.score;
+    Game.scene.energy = file.energy;
+    Game.scene.timestamp = file.timestamp;
 };
 // ##################"
 
@@ -102,6 +109,33 @@ Game.recoverEnergy = function() {
     }
     Game.updateEnergy(5); // Increase energy by 5 every second
 };
+
+Game.calculateOfflineRecharge = function() {
+    // Load the last saved file
+    var file = JSON.parse(localStorage.getItem('saveFile'));
+    if (file && file.timestamp) {
+        var lastTime = file.timestamp;
+        var currentTime = Date.now();
+        var timeElapsed = currentTime - lastTime;
+
+        // Calculate the number of seconds elapsed
+        var secondsElapsed = Math.floor(timeElapsed / 1000);
+
+        // Calculate energy to be recharged
+        var energyToRecharge = Math.floor(secondsElapsed * 5);
+        
+        // Check if recharged energy exceeds the maximum limit
+        if (energyToRecharge + Game.scene.energy > 5000) {
+            energyToRecharge = 5000 - Game.scene.energy;
+        }
+        // Update energy
+        Game.updateEnergy(energyToRecharge);
+    }
+};
+
+window.addEventListener('beforeunload', function() {
+    Game.saveFile();
+});
 
 var config = {
     type: Phaser.AUTO,
