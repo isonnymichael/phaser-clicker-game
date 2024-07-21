@@ -7,7 +7,7 @@ Game.preload = function(){
 };
 
 Game.create = function(){
-    var logo = this.add.image(window.innerWidth / 2, window.innerHeight / 2,'logo').setInteractive();
+    var logo = this.add.image(config.width / 2, config.height / 2 - 100,'logo').setInteractive();
     logo.on('pointerdown',function(pointer){
         Game.updateScore(10);
 
@@ -35,8 +35,7 @@ Game.create = function(){
         });
     });
 
-    var txt = this.add.bitmapText((window.innerWidth / 2) - 100, logo.height, 'font', 'SCORE:', 38).setOrigin(0);
-    this.scoreTxt = this.add.bitmapText(txt.x+txt.width+10, logo.height, 'font', '0', 38).setOrigin(0);
+    this.scoreTxt = this.add.bitmapText(config.width / 2, logo.height - 300, 'font', '0', 76).setOrigin(0.5, 0.5);
     Game.setScore();
 };
 
@@ -71,8 +70,12 @@ Game.updateScore = function(increment){
 
 var config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 764,
+    height: 1366,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
     parent: 'game',
     scene: [Game]
 };
