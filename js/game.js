@@ -1,34 +1,41 @@
 var Game = {};
 
-Game.preload = function(){
-    Game.scene = this; // Handy reference to the scene (alternative to `this` binding)
+/**
+ * Preload assets required for the game.
+ */
+Game.preload = function() {
+    Game.scene = this; // Handy reference to the scene (alternative to this binding)
     this.load.image('logo', 'assets/PhaserLogo.png');
     this.load.image('task', 'assets/task.png');
     this.load.image('friend', 'assets/friend.png');
     this.load.image('boost', 'assets/boost.png');
-    this.load.bitmapFont('font','assets/azo-fire.png','assets/azo-fire.xml')
+    this.load.bitmapFont('font', 'assets/azo-fire.png', 'assets/azo-fire.xml');
 };
 
-Game.create = function(){
-    var logo = this.add.image(config.width / 2, config.height / 2 - 100,'logo').setInteractive();
-    logo.on('pointerdown',function(pointer){
+/**
+ * Create the game scene, including the logo, score and energy displays, and buttons.
+ */
+Game.create = function() {
+    var { width, height } = config;
+    var centerX = width / 2;
+    var centerY = height / 2;
 
-        if (Game.scene.energy < 10){
-            return;
-        }
+    // Add logo and set up interaction
+    var logo = this.add.image(centerX, centerY - 100, 'logo').setInteractive();
+    logo.on('pointerdown', function(pointer) {
+        if (Game.scene.energy < 10) return;
 
         Game.updateScore(10);
         Game.updateEnergy(-10);
 
-        Game.scene.tweens.add(
-            {
-                targets: logo,
-                scaleX: 0.9,
-                scaleY: 0.9,
-                duration: 50,
-                yoyo: true
-            }
-        );
+        // Add tween animation
+        Game.scene.tweens.add({
+            targets: logo,
+            scaleX: 0.9,
+            scaleY: 0.9,
+            duration: 50,
+            yoyo: true
+        });
 
         // Add floating text
         var floatingText = Game.scene.add.bitmapText(pointer.x, pointer.y, 'font', '+10', 38).setOrigin(0.5);
@@ -38,37 +45,29 @@ Game.create = function(){
             alpha: 0,
             duration: 1000,
             ease: 'Power1',
-            onComplete: function() {
-                floatingText.destroy();
-            }
+            onComplete: () => floatingText.destroy()
         });
     });
 
-    this.scoreTxt = this.add.bitmapText(config.width / 2, logo.height - 300, 'font', '0', 76).setOrigin(0.5, 0.5);
+    // Display score and energy
+    this.scoreTxt = this.add.bitmapText(centerX, centerY - 400, 'font', '0', 76).setOrigin(0.5);
     Game.setScore();
 
-    this.energyTxt = this.add.bitmapText(config.width / 2, logo.y + 350, 'font', '5000/5000', 48).setOrigin(0.5, 0.5);
+    this.energyTxt = this.add.bitmapText(centerX, centerY + 350, 'font', '5000/5000', 48).setOrigin(0.5);
     Game.setEnergy();
 
     // Add buttons at the bottom
-    var buttonY = config.height - 100; // Adjust the Y position of the buttons
+    var buttonY = height - 100; // Adjust the Y position of the buttons
     var buttonSpacing = 230;
 
-    var taskButton = this.add.image(config.width / 2 - buttonSpacing, buttonY, 'task').setInteractive();
-    var friendButton = this.add.image(config.width / 2, buttonY, 'friend').setInteractive();
-    var boostButton = this.add.image(config.width / 2 + buttonSpacing, buttonY, 'boost').setInteractive();
+    var taskButton = this.add.image(centerX - buttonSpacing, buttonY, 'task').setInteractive();
+    var friendButton = this.add.image(centerX, buttonY, 'friend').setInteractive();
+    var boostButton = this.add.image(centerX + buttonSpacing, buttonY, 'boost').setInteractive();
 
-    taskButton.on('pointerdown', function(pointer) {
-        alert('Task button clicked');
-    });
-
-    friendButton.on('pointerdown', function(pointer) {
-        alert('Friend button clicked');
-    });
-
-    boostButton.on('pointerdown', function(pointer) {
-        alert('Boost button clicked');
-    });
+    // Set button interactions
+    taskButton.on('pointerdown', () => alert('Task button clicked'));
+    friendButton.on('pointerdown', () => alert('Friend button clicked'));
+    boostButton.on('pointerdown', () => alert('Boost button clicked'));
 
     // Set up energy recovery every second
     this.time.addEvent({
@@ -82,17 +81,25 @@ Game.create = function(){
     Game.calculateOfflineRecharge();
 };
 
-Game.setScore = function(){
+/**
+ * Set the score display to the stored score or default to 5000.
+ */
+Game.setScore = function() {
     Game.scene.score = parseInt(localStorage.getItem('score')) || 5000;
     Game.scene.scoreTxt.setText(Game.scene.score);
 };
 
-Game.setEnergy = function(){
+/**
+ * Set the energy display to the stored energy or default to 0.
+ */
+Game.setEnergy = function() {
     Game.scene.energy = parseInt(localStorage.getItem('energy')) || 0;
-    Game.scene.energyTxt.setText(Game.scene.energy + '/' + '5000');
+    Game.scene.energyTxt.setText(Game.scene.energy + '/5000');
 };
 
-
+/**
+ * Save the current game state to localStorage.
+ */
 Game.saveFile = function() {
     var file = {
         score: Game.scene.score,
@@ -102,63 +109,66 @@ Game.saveFile = function() {
     localStorage.setItem('saveFile', JSON.stringify(file));
 };
 
+/**
+ * Load the game state from localStorage.
+ */
 Game.loadFile = function() {
     var file = JSON.parse(localStorage.getItem('saveFile'));
     Game.scene.score = file.score;
     Game.scene.energy = file.energy;
     Game.scene.timestamp = file.timestamp;
 };
-// ##################"
 
-Game.updateScore = function(increment){
+/**
+ * Update the score by the given increment and save it to localStorage.
+ * @param {number} increment - The amount to increase or decrease the score.
+ */
+Game.updateScore = function(increment) {
     Game.scene.score += increment;
     Game.scene.scoreTxt.setText(Game.scene.score);
-    localStorage.setItem('score',Game.scene.score);
-
-    Game.scene.scoreTxt.setText(Game.scene.score);
+    localStorage.setItem('score', Game.scene.score);
 };
 
-Game.updateEnergy = function(increment){
+/**
+ * Update the energy by the given increment and save it to localStorage.
+ * @param {number} increment - The amount to increase or decrease the energy.
+ */
+Game.updateEnergy = function(increment) {
     Game.scene.energy += increment;
-    Game.scene.energyTxt.setText(Game.scene.energy);
-    localStorage.setItem('energy',Game.scene.energy);
-
-    Game.scene.energyTxt.setText(Game.scene.energy + '/' + '5000');
+    Game.scene.energyTxt.setText(Game.scene.energy + '/5000');
+    localStorage.setItem('energy', Game.scene.energy);
 };
 
+/**
+ * Recover energy by 5 units every second, ensuring it does not exceed the maximum.
+ */
 Game.recoverEnergy = function() {
-    if(Game.scene.energy >= 5000){
-        return;
-    }
+    if (Game.scene.energy >= 5000) return;
     Game.updateEnergy(5); // Increase energy by 5 every second
 };
 
+/**
+ * Calculate and apply the energy recharge based on the time elapsed since the last save.
+ */
 Game.calculateOfflineRecharge = function() {
-    // Load the last saved file
     var file = JSON.parse(localStorage.getItem('saveFile'));
     if (file && file.timestamp) {
         var lastTime = file.timestamp;
         var currentTime = Date.now();
         var timeElapsed = currentTime - lastTime;
 
-        // Calculate the number of seconds elapsed
         var secondsElapsed = Math.floor(timeElapsed / 1000);
-
-        // Calculate energy to be recharged
         var energyToRecharge = Math.floor(secondsElapsed * 5);
         
-        // Check if recharged energy exceeds the maximum limit
         if (energyToRecharge + Game.scene.energy > 5000) {
             energyToRecharge = 5000 - Game.scene.energy;
         }
-        // Update energy
         Game.updateEnergy(energyToRecharge);
     }
 };
 
-window.addEventListener('beforeunload', function() {
-    Game.saveFile();
-});
+// Save the game state before the window unloads
+window.addEventListener('beforeunload', Game.saveFile);
 
 var config = {
     type: Phaser.AUTO,
