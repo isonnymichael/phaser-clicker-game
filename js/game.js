@@ -82,18 +82,18 @@ Game.create = function() {
 };
 
 /**
- * Set the score display to the stored score or default to 5000.
+ * Set the score display to the stored score or default to 0.
  */
 Game.setScore = function() {
-    Game.scene.score = parseInt(localStorage.getItem('score')) || 5000;
+    Game.scene.score = parseInt(localStorage.getItem('score')) || 0;
     Game.scene.scoreTxt.setText(Game.scene.score);
 };
 
 /**
- * Set the energy display to the stored energy or default to 0.
+ * Set the energy display to the stored energy or default to 5000.
  */
 Game.setEnergy = function() {
-    Game.scene.energy = parseInt(localStorage.getItem('energy')) || 0;
+    Game.scene.energy = parseInt(localStorage.getItem('energy')) || 5000;
     Game.scene.energyTxt.setText(Game.scene.energy + '/5000');
 };
 
