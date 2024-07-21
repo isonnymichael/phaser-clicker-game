@@ -3,6 +3,9 @@ var Game = {};
 Game.preload = function(){
     Game.scene = this; // Handy reference to the scene (alternative to `this` binding)
     this.load.image('logo', 'assets/PhaserLogo.png');
+    this.load.image('task', 'assets/task.png');
+    this.load.image('friend', 'assets/friend.png');
+    this.load.image('boost', 'assets/boost.png');
     this.load.bitmapFont('font','assets/azo-fire.png','assets/azo-fire.xml')
 };
 
@@ -46,6 +49,26 @@ Game.create = function(){
 
     this.energyTxt = this.add.bitmapText(config.width / 2, logo.y + 350, 'font', '5000/5000', 48).setOrigin(0.5, 0.5);
     Game.setEnergy();
+
+    // Add buttons at the bottom
+    var buttonY = config.height - 100; // Adjust the Y position of the buttons
+    var buttonSpacing = 230;
+
+    var taskButton = this.add.image(config.width / 2 - buttonSpacing, buttonY, 'task').setInteractive();
+    var friendButton = this.add.image(config.width / 2, buttonY, 'friend').setInteractive();
+    var boostButton = this.add.image(config.width / 2 + buttonSpacing, buttonY, 'boost').setInteractive();
+
+    taskButton.on('pointerdown', function(pointer) {
+        alert('Task button clicked');
+    });
+
+    friendButton.on('pointerdown', function(pointer) {
+        alert('Friend button clicked');
+    });
+
+    boostButton.on('pointerdown', function(pointer) {
+        alert('Boost button clicked');
+    });
 
     // Set up energy recovery every second
     this.time.addEvent({
@@ -141,6 +164,7 @@ var config = {
     type: Phaser.AUTO,
     width: 764,
     height: 1366,
+    backgroundColor: '#2c3e50',
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
