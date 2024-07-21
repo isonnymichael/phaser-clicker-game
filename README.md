@@ -45,7 +45,7 @@ Play the game [here](https://phaser-clicker-game.vercel.app/).
 
 1. **Clone the Repository**:
     ```sh
-    git clone https://github.com/yourusername/phaser-clicker-game.git
+    git clone https://github.com/isonnymichael/phaser-clicker-game.git
     ```
 
 2. **Navigate to the Project Directory**:
