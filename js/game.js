@@ -167,7 +167,9 @@ Game.calculateOfflineRecharge = function() {
     }
 };
 
-// Save the game state before the window unloads
+/*
+* Update the score by a specified amount and display it on screen.
+*/
 window.addEventListener('beforeunload', Game.saveFile);
 
 var config = {
